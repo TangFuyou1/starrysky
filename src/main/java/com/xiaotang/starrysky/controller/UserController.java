@@ -1,11 +1,14 @@
 package com.xiaotang.starrysky.controller;
 
+import com.google.gson.Gson;
+import com.xiaotang.starrysky.Data;
 import com.xiaotang.starrysky.model.dao.Userdatadb;
 import com.alibaba.fastjson.JSONObject;
-
 import com.xiaotang.starrysky.model.db.UserDaoImp;
+import com.xiaotang.starrysky.model.mqtt.Mymqtt;
 import org.springframework.http.*;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Controller;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
@@ -23,7 +26,8 @@ import java.util.Map;
  * 描述: TODO
  */
 @RestController
-public class Controller {
+@RequestMapping("/user")
+public class UserController {
     @Resource //自动装配
     private JdbcTemplate jdbcTemplate;//数据库实例
 
@@ -112,7 +116,7 @@ public class Controller {
      */
     @RequestMapping(value = "/BalDetail", method = RequestMethod.GET)
     @ResponseBody
-    public ResponseEntity<String> CreateIssueBalanceDetail() {
+    public JSONObject CreateIssueBalanceDetail() {
 
         //请求路径
         String url = "http://httpbin.hello-chen.cn:8520/anything";
@@ -120,7 +124,6 @@ public class Controller {
         RestTemplate restTemplate = new RestTemplate();
         //添加请求数据
         LinkedMultiValueMap<String, String> body = new LinkedMultiValueMap();
-        //  TempHumi tempHumi = new TempHumi("23", "28.3", "53", "1", "2020-10-03");
         //设置请求header 为 APPLICATION_FORM_URLENCODED
         HttpHeaders headers = new HttpHeaders();
         body.set("","");
@@ -129,18 +132,18 @@ public class Controller {
         headers.setContentType(MediaType.APPLICATION_PROBLEM_JSON);
         // 请求体，包括请求数据 body 和 请求头 headers
         HttpEntity httpEntity = new HttpEntity(body, headers);
-
         //使用 exchange 发送请求，以String的类型接收返回的数据
         //ps，我请求的数据，其返回是一个json
+
 
         ResponseEntity<String> req1  = restTemplate.exchange(url, HttpMethod.GET, httpEntity, String.class);
         JSONObject jsTemp = JSONObject.parseObject(req1.getBody()); //将字符串转成json数据
         System.out.println(jsTemp);
 
-//        Postdata postdata = new Gson().fromJson(String.valueOf(jsTemp),Postdata.class);
-//        System.out.println(postdata.getHeaders().get_$Accept145());
+        Data data = new Gson().fromJson(String.valueOf(jsTemp),Data.class);
+        System.out.println("data:"+data.toString());
 
-        return req1;
+        return jsTemp;
     }
     /**
      * 接收用户的注册信息

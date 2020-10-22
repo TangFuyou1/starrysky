@@ -48,7 +48,7 @@ public class Controller {
     {
         if (UserDaoImp.findUserById(accout,jdbcTemplate)==null)
         {
-            return new Userdatadb("空","空","空");
+            return new Userdatadb("0","0","0");
         }
         return UserDaoImp.findUserById(accout,jdbcTemplate);
     }
